@@ -1,0 +1,125 @@
+{
+  "name": "AI Auto Blogger",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {},
+            {},
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7bc1a799-86a8-4dc8-ba26-24ebd2adef2f",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search.json?q=latest+AI+news&tbm=nws&api_key=MY_API_KEY",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "fe85fd7f-943c-41b2-a0ca-fe939f7cbb9b",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const articles = $input.first().json.news_results;\n\nconst topArticles = articles.slice(0, 3);\n\nreturn topArticles.map(article => ({\n  json: {\n    title: article.title,\n    summary: article.snippet,\n    link: article.link\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "87077970-84b3-4c63-8159-9e1cf6c0dcf0",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "sendTo": "abcd@gmail.com",
+        "subject": "AI Auto News Blogger",
+        "message": "=<h2>🧠 Top AI News Today</h2> {{$json.blog}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "feb6faa5-8744-417d-8bb2-c187b6152342",
+      "name": "Send a message",
+      "webhookId": "a114e414-228a-4626-8cbe-f05b2ddc8401",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "JHg3BxrV97efM4CT",
+          "name": "Gmail account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "5265fa3a-6806-42fc-bec8-69794f0aa836",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "740d9125adeae194533517593a1cff503e039bd22daed2f27f68d753d7997b6e"
+  },
+  "id": "f86D8zwSAfTfDDIf",
+  "tags": []
+}
